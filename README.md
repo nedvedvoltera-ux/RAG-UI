@@ -1,70 +1,223 @@
-# Getting Started with Create React App
+# CorpRAG UI - UI Prototype
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+UI-прототип корпоративного RAG-сервиса на React + TypeScript + Tailwind CSS. Полностью клиентская реализация с мок-данными, без реального бэкенда.
 
-## Available Scripts
+## 🎯 Цель проекта
 
-In the project directory, you can run:
+Создать демонстрационный UI-эталон для передачи реальному фронтендеру. Все API-вызовы заменены на мок-сервис с имитацией сетевых задержек.
 
-### `npm start`
+## 🚀 Быстрый старт
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Установка зависимостей
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm install
+```
 
-### `npm test`
+### Запуск в режиме разработки
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm start
+```
 
-### `npm run build`
+Приложение откроется на [http://localhost:3000](http://localhost:3000)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Сборка для продакшена
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm run build
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📁 Структура проекта
 
-### `npm run eject`
+```
+src/
+├── components/          # React компоненты
+│   ├── Layout.tsx      # Основной layout с навигацией
+│   ├── ChatLayout.tsx  # Layout для страницы чата
+│   └── chat/           # Компоненты чата
+│       ├── CollectionsSidebar.tsx
+│       ├── ChatThread.tsx
+│       ├── MessageBubble.tsx
+│       ├── Composer.tsx
+│       ├── RightPanel.tsx
+│       ├── SourcesPanel.tsx
+│       ├── RetrievalPanel.tsx
+│       └── SessionPanel.tsx
+├── pages/              # Страницы приложения
+│   ├── ChatPage.tsx
+│   ├── KnowledgePage.tsx
+│   └── AdminPage.tsx
+├── services/           # Сервисы
+│   └── mockService.ts  # Мок-сервис с имитацией API
+├── contexts/           # React контексты
+│   └── ChatContext.tsx # Контекст для управления состоянием чата
+├── types.ts            # TypeScript типы
+└── App.tsx             # Главный компонент с роутингом
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🎨 Страницы и функциональность
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Chat (`/chat`)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Трёхколоночный layout:
+- **Левая колонка**: Выбор коллекций (multi-select), поиск, кнопка "Manage knowledge"
+- **Центр**: Чат с поддержкой streaming-имитации (по буквам)
+- **Правая колонка**: Вкладки Sources / Retrieval / Session
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Особенности**:
+- Inline-цитаты в тексте ответа с кликабельными маркерами `[1]`, `[2]`, etc.
+- Панель Sources показывает top 3-5 источников с карточками
+- Prompt controls: переключатель brief/detailed, top-k slider, strict grounding checkbox
+- Имитация состояний: "Searching...", "Generating...", streaming ответа
 
-## Learn More
+### 2. Knowledge (`/knowledge`)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Управление коллекциями и документами:
+- **Левая панель**: Список коллекций (create/rename/delete)
+- **Правая панель**: 
+  - Upload area (drag & drop UI)
+  - Таблица документов с колонками: name/type/size/status/updatedAt
+  - Actions: "Reindex", "Remove"
+  - Статусы: uploaded/parsing/indexing/ready/failed
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Admin (`/admin`)
 
-### Code Splitting
+Наблюдаемость и логи:
+- Таблица "Requests log" с колонками: time, question, collections, latency, top-k, model
+- Drawer/Modal с деталями запроса:
+  - Список retrieved sources
+  - Final prompt summary
+  - Тайминги (retrieval_ms, llm_ms, total_ms)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔧 Технологии
 
-### Analyzing the Bundle Size
+- **React 19** с TypeScript
+- **React Router** для навигации
+- **Tailwind CSS** для стилизации
+- **react-markdown** для рендеринга Markdown
+- **lucide-react** для иконок
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📝 Мок-данные
 
-### Making a Progressive Web App
+Все данные хранятся в памяти в `src/services/mockService.ts`. При перезагрузке страницы данные сбрасываются.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Мок-коллекции**:
+- Product Documentation (12 документов)
+- Engineering Wiki (45 документов)
+- Company Policies (8 документов)
+- Research Papers (23 документа)
 
-### Advanced Configuration
+**Имитация сетевых задержек**: 300-900ms случайная задержка для каждого запроса.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🎯 Сценарии для тестирования
 
-### Deployment
+### Chat страница
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. **Выбор коллекций и отправка вопроса**:
+   - Выберите одну или несколько коллекций в левой панели
+   - Введите вопрос в поле ввода
+   - Настройте параметры (mode, top-k, strict grounding)
+   - Отправьте вопрос (Enter или кнопка Send)
+   - Наблюдайте имитацию поиска и генерации ответа
 
-### `npm run build` fails to minify
+2. **Работа с цитатами**:
+   - После получения ответа кликните на маркер цитаты `[1]` в тексте
+   - Проверьте подсветку соответствующего источника в правой панели Sources
+   - Используйте кнопку "Copy citation" для копирования цитаты
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+3. **Просмотр деталей retrieval**:
+   - Переключитесь на вкладку "Retrieval" в правой панели
+   - Изучите список retrieved chunks с оценками релевантности
+
+### Knowledge страница
+
+1. **Создание коллекции**:
+   - Нажмите кнопку "+" в левой панели
+   - Введите название коллекции
+   - Нажмите "Create"
+
+2. **Загрузка документа**:
+   - Выберите коллекцию
+   - Перетащите файл в upload area или кликните для выбора
+   - Наблюдайте изменение статуса: uploaded → parsing → indexing → ready
+
+3. **Управление документами**:
+   - Используйте кнопку "Reindex" для переиндексации документа
+   - Используйте кнопку "Remove" для удаления документа
+
+### Admin страница
+
+1. **Просмотр логов**:
+   - Откройте страницу Admin
+   - Просмотрите таблицу запросов
+   - Кликните на строку для просмотра деталей
+
+2. **Детали запроса**:
+   - В открывшемся drawer изучите:
+     - Вопрос и коллекции
+     - Параметры запроса
+     - Тайминги (retrieval, LLM, total)
+     - Debug информацию
+     - Retrieved sources
+     - Final prompt summary
+
+## 🔄 Интеграция с реальным API
+
+Все места, где нужно заменить мок-сервис на реальный API, помечены комментариями `TODO: replace mockService with real API` или находятся в:
+
+- `src/services/mockService.ts` - заменить все функции на реальные API-вызовы
+- `src/components/chat/ChatThread.tsx` - обновить логику отправки сообщений
+- `src/pages/KnowledgePage.tsx` - обновить CRUD операции для коллекций и документов
+- `src/pages/AdminPage.tsx` - обновить загрузку логов
+
+**Рекомендуемый подход**:
+1. Создать `src/services/apiService.ts` с реальными API-вызовами
+2. Заменить импорты `mockService` на `apiService`
+3. Обновить типы ответов API при необходимости
+4. Добавить обработку ошибок и retry-логику
+
+## 🎨 UI/UX паттерны
+
+### Citations (Цитаты)
+- Inline-сноски в тексте ответа с маркерами `[1]`, `[2]`, etc.
+- Правая панель "Sources" с карточками источников
+- Кликабельные маркеры для подсветки источников
+- Кнопка "Copy citation" для копирования
+
+### Trust Layer
+- Отдельная панель Sources для исследования источников
+- Показ только top 3-5 источников для избежания перегрузки
+- Сниппеты из документов
+- Метаданные (коллекция, документ, score)
+
+### Retrieval Details
+- Отдельная вкладка в правой панели
+- Параметры запроса (top-k, фильтры)
+- Список retrieved chunks с оценками
+
+### Prompt Controls
+- Компактные переключатели под инпутом
+- Группировка: mode (brief/detailed), top-k slider, strict grounding checkbox
+- Понятные названия и иконки
+
+## 🐛 Известные ограничения
+
+- Все данные хранятся в памяти и сбрасываются при перезагрузке
+- Streaming ответа имитируется посимвольно (не реальный SSE)
+- Upload файлов не парсит реальные файлы, только добавляет мок-запись
+- Нет реальной авторизации и ACL (только UI-заглушки)
+
+## 📦 Зависимости
+
+Основные зависимости указаны в `package.json`. Для работы требуется:
+- Node.js 16+
+- npm или yarn
+
+## 📄 Лицензия
+
+Проект создан для демонстрационных целей.
+
+---
+
+**Примечание**: Это UI-прототип без реального бэкенда. Все данные являются моками и предназначены только для демонстрации интерфейса.
