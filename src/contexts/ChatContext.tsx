@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo, useState, ReactNode } from 'react';
 import { ChatMessage, ChatParams, Source } from '../types';
 import { mockService } from '../services/mockService';
+import { useAuth } from './AuthContext';
 
 interface ChatContextType {
   // Sources
@@ -19,6 +20,7 @@ interface ChatContextType {
   activeSessionId: string;
   setActiveSessionId: (id: string) => void;
   createSession: () => string;
+  deleteSession: (id: string) => void;
 
   // Sending / streaming
   isLoading: boolean;
@@ -35,6 +37,7 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [currentSources, setCurrentSources] = useState<Source[]>([]);
   const [highlightedSource, setHighlightedSource] = useState<string | null>(null);
 
@@ -134,6 +137,33 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return id;
   };
 
+  const deleteSession: ChatContextType['deleteSession'] = (id) => {
+    setSessions((prev) => {
+      const remaining = prev.filter((s) => s.id !== id);
+
+      if (activeSessionId !== id) return remaining;
+
+      const nextActive = remaining[0]?.id;
+      if (nextActive) {
+        setActiveSessionId(nextActive);
+        return remaining;
+      }
+
+      // если удалили последний чат — создаём новый
+      const newId = `chat-${Date.now()}`;
+      const now = new Date().toISOString();
+      setActiveSessionId(newId);
+      return [
+        {
+          id: newId,
+          title: 'Новый чат',
+          updatedAt: now,
+          messages: [],
+        },
+      ];
+    });
+  };
+
   const sendMessage: ChatContextType['sendMessage'] = async (question, params, selectedCollections) => {
     const trimmed = question.trim();
     if (!trimmed) return;
@@ -172,6 +202,12 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const response = await mockService.sendChat(trimmed, {
         ...params,
+        user: {
+          email: user?.email ?? 'unknown',
+          role: user?.role ?? 'employee',
+          groups: undefined,
+          emailVerified: true,
+        },
         collections: selectedCollections.length ? selectedCollections : ['col1', 'col2', 'col3', 'col4'],
       });
 
@@ -264,6 +300,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         activeSessionId,
         setActiveSessionId,
         createSession,
+        deleteSession,
         isLoading,
         streamingMessage,
         phase,
