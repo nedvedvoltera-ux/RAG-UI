@@ -45,7 +45,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Menu size={20} className="text-gray-700 dark:text-slate-200" />
               </button>
 
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate dark:text-slate-100">CorpRAG UI</h1>
+              <h1 className="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-gray-900 truncate dark:text-slate-100">
+                <span role="img" aria-label="Shark">
+                  🦈
+                </span>
+                <span>SharkRAG</span>
+              </h1>
 
               <nav className="hidden sm:flex space-x-1">
                 {navItems.map((item) => {
